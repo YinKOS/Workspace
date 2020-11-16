@@ -1,7 +1,6 @@
 安卓电源管理服务启动流程:
 
 Init process:
-<<<<<<< HEAD
   service_manager:        //启动binder服务
   Zegote:                 //AndroidRuntime和AndriodVM 进入Java环境
     Syste_server:
@@ -22,14 +21,6 @@ Init process:
               publishBinderService():
               publishLocalService():
               WatchDog:                               //将PMS加入WatchDog监控
-=======
-  service_manager:
-  Zegote:
-    Syste_server:
-      startBootstrapService():
-        startService(PowerManagerService.class):
-          SystemServiceManager.startService():
->>>>>>> ec738c194effaeca28e47791095b3b795a77e381
       startOtherService():
         PowerManagerService.systemReady():
 
