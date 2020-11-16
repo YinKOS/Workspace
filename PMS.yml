@@ -1,0 +1,12 @@
+安卓电源管理服务启动流程:
+
+Init process:
+  service_manager:
+  Zegote:
+    Syste_server:
+      startBootstrapService():
+        startService(PowerManagerService.class):
+          SystemServiceManager.startService():
+      startOtherService():
+        PowerManagerService.systemReady():
+
