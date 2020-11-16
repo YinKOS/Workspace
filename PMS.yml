@@ -1,0 +1,26 @@
+安卓电源管理服务启动流程:
+
+Init process:
+  service_manager:        //启动binder服务
+  Zegote:                 //AndroidRuntime和AndriodVM 进入Java环境
+    Syste_server:
+      startBootstrapService():
+        startService(PowerManagerService.class):      //利用反射机制启动PMS
+          SystemServiceManager.startService():
+            PowerManagerService():
+              ServiceThread():                        //handle service
+              Injector.createHandle():                //开启handle service Loop()使用Injector注入handle回调方法
+              set brightness:                         //save & get them form config
+              Injector.createSuspendBlocker("PowerManagerService.WakeLocks"): //mWakelockSuspendBlocker  --->CPU
+              Injector.createSuspendBlocker("PowerManagerService.Display"): // mDisplaySuspendBlocker  acquire()  --->Screen
+              NativeWrapper.nativeInit():
+              NativeWrapper.nativeSetAutoSuspend():
+              NativeWrapper.nativeSetInteractive():
+              NativeWrapper.nativeSetFeature():
+            PowerManagerService.onStart():
+              publishBinderService():
+              publishLocalService():
+              WatchDog:                               //将PMS加入WatchDog监控
+      startOtherService():
+        PowerManagerService.systemReady():
+
