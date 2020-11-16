@@ -4,9 +4,9 @@ Init process:
   service_manager:        //启动binder服务
   Zegote:                 //AndroidRuntime和AndriodVM 进入Java环境
     Syste_server:
-      startBootstrapService():
+      startBootstrapService():                        //PHASE 0
         startService(PowerManagerService.class):      //利用反射机制启动PMS
-          SystemServiceManager.startService():
+          SystemServiceManager.startService(Service):
             PowerManagerService():
               BinderService():                        //mBinderService
               LocalService():                         //mLocalSerivce
@@ -25,8 +25,10 @@ Init process:
               publishBinderService(POWER_SERVICE,mBinderService):
                 ServiceManager.addService(PS,BinderSerivce):                  //将PMS注册到ServiceManager之中
               publishLocalService():
+                LocalServices.addService(PowerManagerImple.class,mLocalService):      //注册本地服务
               WatchDog.addMonistor():                  //将PMS加入WatchDog监控
               WatchDog.addThread():                               
       startOtherService():
-        PowerManagerService.systemReady():
+        PowerManagerService.systemReady():             //PHASE_SYSTEM_SERVICES_READY 500
+          
 
