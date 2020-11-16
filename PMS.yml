@@ -1,7 +1,6 @@
 安卓电源管理服务启动流程:
 
 Init process:
-<<<<<<< HEAD
   service_manager:        //启动binder服务
   Zegote:                 //AndroidRuntime和AndriodVM 进入Java环境
     Syste_server:
@@ -9,27 +8,25 @@ Init process:
         startService(PowerManagerService.class):      //利用反射机制启动PMS
           SystemServiceManager.startService():
             PowerManagerService():
+              BinderService():                        //mBinderService
+              LocalService():                         //mLocalSerivce
               ServiceThread():                        //handle service
               Injector.createHandle():                //开启handle service Loop()使用Injector注入handle回调方法
+              mWakefulness=WAKEFULNESS_AWAKE:
               set brightness:                         //save & get them form config
-              Injector.createSuspendBlocker("PowerManagerService.WakeLocks"): //mWakelockSuspendBlocker  --->CPU
-              Injector.createSuspendBlocker("PowerManagerService.Display"): // mDisplaySuspendBlocker  acquire()  --->Screen
-              NativeWrapper.nativeInit():
-              NativeWrapper.nativeSetAutoSuspend():
+              Injector.createSuspendBlocker("PowerManagerService.WakeLocks"): //mWakelockSuspendBlocker  --->CPU  ----->/sys/power/wake_lock  wake_unlock  ---->work source event
+              Injector.createSuspendBlocker("PowerManagerService.Display"): // mDisplaySuspendBlocker  acquire()  --->Screen  
+              NativeWrapper.nativeInit(): 
+                nativeInit():                          //native funciton   ----->IPower_1.0.getService()             
+              NativeWrapper.nativeSetAutoSuspend():    
               NativeWrapper.nativeSetInteractive():
               NativeWrapper.nativeSetFeature():
             PowerManagerService.onStart():
-              publishBinderService():
+              publishBinderService(POWER_SERVICE,mBinderService):
+                ServiceManager.addService(PS,BinderSerivce):                  //将PMS注册到ServiceManager之中
               publishLocalService():
-              WatchDog:                               //将PMS加入WatchDog监控
-=======
-  service_manager:
-  Zegote:
-    Syste_server:
-      startBootstrapService():
-        startService(PowerManagerService.class):
-          SystemServiceManager.startService():
->>>>>>> ec738c194effaeca28e47791095b3b795a77e381
+              WatchDog.addMonistor():                  //将PMS加入WatchDog监控
+              WatchDog.addThread():                               
       startOtherService():
         PowerManagerService.systemReady():
 
