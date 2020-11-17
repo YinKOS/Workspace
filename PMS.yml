@@ -1,34 +1,51 @@
 安卓电源管理服务启动流程:
 
 Init process:
-  service_manager:        //启动binder服务
-  Zegote:                 //AndroidRuntime和AndriodVM 进入Java环境
+  service_manager:                                    //启动binder服务
+  Zygote:                                             //AndroidRuntime和AndriodVM 进入Java环境
     Syste_server:
       startBootstrapService():                        //PHASE 0
         startService(PowerManagerService.class):      //利用反射机制启动PMS
           SystemServiceManager.startService(Service):
-            PowerManagerService():
-              BinderService():                        //mBinderService
-              LocalService():                         //mLocalSerivce
-              ServiceThread():                        //handle service
-              Injector.createHandle():                //开启handle service Loop()使用Injector注入handle回调方法
-              mWakefulness=WAKEFULNESS_AWAKE:
-              set brightness:                         //save & get them form config
-              Injector.createSuspendBlocker("PowerManagerService.WakeLocks"): //mWakelockSuspendBlocker  --->CPU  ----->/sys/power/wake_lock  wake_unlock  ---->work source event
-              Injector.createSuspendBlocker("PowerManagerService.Display"): // mDisplaySuspendBlocker  acquire()  --->Screen  
-              NativeWrapper.nativeInit(): 
-                nativeInit():                          //native funciton   ----->IPower_1.0.getService()             
-              NativeWrapper.nativeSetAutoSuspend():    
-              NativeWrapper.nativeSetInteractive():
-              NativeWrapper.nativeSetFeature():
-            PowerManagerService.onStart():
-              publishBinderService(POWER_SERVICE,mBinderService):
-                ServiceManager.addService(PS,BinderSerivce):                  //将PMS注册到ServiceManager之中
-              publishLocalService():
-                LocalServices.addService(PowerManagerImple.class,mLocalService):      //注册本地服务
-              WatchDog.addMonistor():                  //将PMS加入WatchDog监控
-              WatchDog.addThread():                               
+            PowerManagerService():   
+            PowerManagerService.onStart():                                     
       startOtherService():
-        PowerManagerService.systemReady():             //PHASE_SYSTEM_SERVICES_READY 500
-          
+        PowerManagerService.systemReady():            //PHASE_SYSTEM_SERVICES_READY 500  
 
+PowerManagerService():
+  BinderService():                        //mBinderService
+  LocalService():                         //mLocalSerivce
+  ServiceThread():                        //handle service
+  Injector.createHandle():                //开启handle service Loop()使用Injector注入handle回调方法
+  mWakefulness=WAKEFULNESS_AWAKE:
+  set brightness:                         //save & get them form config
+  Injector.createSuspendBlocker("PowerManagerService.WakeLocks"): //mWakelockSuspendBlocker  --->CPU  ----->/sys/power/wake_lock  wake_unlock  ---->work source event
+  Injector.createSuspendBlocker("PowerManagerService.Display"): // mDisplaySuspendBlocker  acquire()  --->Screen  
+  NativeWrapper.nativeInit(): 
+    nativeInit():                          //native funciton   ----->IPower_1.0.getService()             
+  NativeWrapper.nativeSetAutoSuspend():    
+  NativeWrapper.nativeSetInteractive():
+  NativeWrapper.nativeSetFeature():
+
+PowerManagerService.onStart():
+  publishBinderService(POWER_SERVICE,mBinderService):
+    ServiceManager.addService(PS,BinderSerivce):                          //将PMS注册到ServiceManager之中
+  publishLocalService():
+    LocalServices.addService(PowerManagerImple.class,mLocalService):      //注册本地服务
+  WatchDog.addMonistor():                                                 //将PMS加入WatchDog监控
+  WatchDog.addThread():     
+                 
+PowerManagerService.systemReady():                 //PHASE_SYSTEM_SERVICES_READY 500  
+  getLocalServices:                                //获取相关的local services ：mDreamManager,mPolicy,mBatteryManagerInternal,mDisplayManagerInternal
+  initScreenBrightness:                            //初始化最大、最小、默认亮度
+  SystemSensorManager(context,Looper):             //sensorManager 用于和传感器沟通
+  BatteryStatsServices.getService():               //系统电量相关
+  Injector.createNotifier():                       //通知
+  Injector.createWirenessDetector():               //无线充电相关   
+  mDisplayManagerInternal.initPowerManagerment():  
+  readConfigurationLocked():
+  updateSettingsLocked():
+  updatePowerStateLocked():                        //PMS核心方法 更新全局电源状态
+  registerForSettingsChanges:                  
+  IVrManager.Stub.asInterface():                   //Vr相关
+  registerForBroadcasts:                           //注册相关广播
